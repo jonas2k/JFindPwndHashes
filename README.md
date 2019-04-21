@@ -47,4 +47,5 @@ ForEach ($account in $accounts ) {
 		$results += $account
 	} 
 }
+$results | Out-File "hashes.ntds.users.enabled" -Encoding "UTF8"
 ```
