@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -26,6 +29,8 @@ import com.anconet.JFindPwndHashes.model.Match;
 public class App {
 
 	public static void main(String[] args) {
+		
+		printBanner();
 
 		Options options = prepareOptions();
 		CommandLineParser parser = new DefaultParser();
@@ -40,23 +45,26 @@ public class App {
 				String outputFileParam = commandLine.getOptionValue("o");
 
 				IHashMatcher hashMatcher = new HashMatcher();
-
+				AdHashCollector adHashCollector = new AdHashCollector();
+				
+				final ConcurrentMap<String, Set<String>> adHashes = adHashCollector.collectAdHashesAsMap(adHashesParam);
+				
+				printConfirmationRequest(adHashes.size());
+				
 				Instant startTime = Instant.now();
 
-				List<Match> matches = hashMatcher.matchWithPwnCount(adHashesParam, pwndHashesParam);
+				List<Match> matches = hashMatcher.matchWithPwnCount(adHashes, pwndHashesParam);
 
 				Instant finishedTime = Instant.now();
 				Duration elapsedTime = Duration.between(startTime, finishedTime);
 
-				File outputFile = new File(System.getProperty("user.home"), getOutputFileName(outputFileParam));
-				String elapsedTimeString = String.format("Elapsed time: %s days, %s hours, %s minutes and %s seconds.%s",
-						elapsedTime.toDays(), elapsedTime.toHoursPart(), elapsedTime.toMinutesPart(),
-						elapsedTime.toSecondsPart(), System.lineSeparator());
+				File outputFile = getOutputFile(outputFileParam);
+				String elapsedTimeString = getElapsedTimeString(elapsedTime);
 
 				writeDataToFile(matches, elapsedTimeString, outputFile);
 
 				System.out.println(elapsedTimeString);
-				System.out.printf("Wrote output file to \"%s\".", outputFile);
+				System.out.printf("Wrote output file to \"%s\".%s", outputFile, System.lineSeparator());
 
 			} else {
 				printHelp(options);
@@ -82,6 +90,11 @@ public class App {
 		}
 	}
 
+	private static File getOutputFile(String outputFileParam) {
+		File outputFile = new File(System.getProperty("user.home"), getOutputFileName(outputFileParam));
+		return outputFile;
+	}
+
 	private static String getOutputFileName(String outputFileParam) {
 
 		String outputFileName = "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmm")) + ".csv";
@@ -93,6 +106,13 @@ public class App {
 		}
 
 		return outputFileName;
+	}
+	
+	private static String getElapsedTimeString(Duration elapsedTime) {
+		String elapsedTimeString = String.format("Elapsed time: %s days, %s hours, %s minutes and %s seconds.%s",
+				elapsedTime.toDays(), elapsedTime.toHoursPart(), elapsedTime.toMinutesPart(),
+				elapsedTime.toSecondsPart(), System.lineSeparator());
+		return elapsedTimeString;
 	}
 
 	private static boolean inputIsValid(CommandLine commandLine) {
@@ -107,6 +127,22 @@ public class App {
 	private static void printHelp(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp("JFindPwndHashes", options);
+	}
+	
+	private static void printConfirmationRequest(int adHashesSize) {
+		System.out.printf("I'll process %s hashes. This may take some time, go grab a cup of coffee.%s", adHashesSize, System.lineSeparator());
+		System.out.print("    (((("+System.lineSeparator() + 
+				"   (((("+System.lineSeparator() + 
+				"    ))))"+System.lineSeparator() + 
+				" _ .---."+System.lineSeparator() + 
+				"( |`---'|"+System.lineSeparator() + 
+				" \\|     |"+System.lineSeparator() + 
+				" : .___, :"+System.lineSeparator() + 
+				"  `-----'"+System.lineSeparator());
+		try(Scanner scanner = new Scanner(System.in)) {
+			System.out.println("Press Enter to continue.");
+			scanner.nextLine();
+		}
 	}
 
 	private static Options prepareOptions() {
@@ -130,5 +166,13 @@ public class App {
 		options.addOption(outputFile);
 
 		return options;
+	}
+
+	private static void printBanner() {
+		System.out.println("****************************");
+		System.out.println(" JFindPwndHashes by jonas2k ");
+		System.out.println("****************************");
+		System.out.println();
+		
 	}
 }
