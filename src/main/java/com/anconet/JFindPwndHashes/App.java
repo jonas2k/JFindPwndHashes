@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.cli.CommandLine;
@@ -47,7 +46,7 @@ public class App {
 				IHashMatcher hashMatcher = new HashMatcher();
 				AdHashCollector adHashCollector = new AdHashCollector();
 				
-				final ConcurrentMap<String, Set<String>> adHashes = adHashCollector.collectAdHashesAsMap(adHashesParam);
+				final ConcurrentMap<String, List<String>> adHashes = adHashCollector.collectAdHashesAsMapByCustomCollector(adHashesParam);
 				
 				printConfirmationRequest(adHashes.size());
 				

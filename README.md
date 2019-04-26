@@ -19,11 +19,11 @@ The list can be downloaded here: https://haveibeenpwned.com/Passwords
 
 1. Dump NTDS.dit on a DC:
 ```
-C:\>mdkir c:\windows\temp\dmp\
+C:\>mkdir c:\windows\temp\dump\
 C:\>ntdsutil
 ntdsutil: activate instance ntds
 ntdsutil: ifm
-ifm: create full c:\windows\temp\dmp\
+ifm: create full c:\windows\temp\dump\
 ifm: quit
 ntdsutil: quit
 ```
@@ -48,4 +48,9 @@ ForEach ($account in $accounts ) {
 	} 
 }
 $results | Out-File "hashes.ntds.users.enabled" -Encoding "UTF8"
+```
+
+5. Execute application
+```
+java -jar JFindPwndHashes.jar -a hashes.ntds.users.enabled -p pwned-passwords-ntlm.txt
 ```
