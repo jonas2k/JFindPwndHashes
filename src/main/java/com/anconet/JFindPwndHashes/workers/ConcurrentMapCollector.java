@@ -1,4 +1,4 @@
-package com.anconet.JFindPwndHashes;
+package com.anconet.JFindPwndHashes.workers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +30,7 @@ public class ConcurrentMapCollector
 			int firstSeparator = element.indexOf(':');
 			int lastSeparator = StringUtils.ordinalIndexOf(element, ":", 3);
 
-			String key = element.substring(lastSeparator).replaceAll(":", "");
+			String key = element.substring(lastSeparator).replaceAll(":", "").toUpperCase();
 			List<String> valueList = map.computeIfAbsent(key, v -> new ArrayList<String>());
 			valueList.add(element.substring(0, firstSeparator));
 		};
