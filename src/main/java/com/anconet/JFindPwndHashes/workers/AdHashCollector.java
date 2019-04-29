@@ -1,8 +1,10 @@
-package com.anconet.JFindPwndHashes;
+package com.anconet.JFindPwndHashes.workers;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+
+import com.anconet.JFindPwndHashes.utils.Helpers;
 
 public class AdHashCollector implements IAdHashCollector {
 	

@@ -1,4 +1,4 @@
-package com.anconet.JFindPwndHashes;
+package com.anconet.JFindPwndHashes.utils;
 
 import java.io.File;
 import java.io.IOException;

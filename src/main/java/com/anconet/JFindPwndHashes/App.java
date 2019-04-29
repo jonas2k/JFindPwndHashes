@@ -24,6 +24,9 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 
 import com.anconet.JFindPwndHashes.model.Match;
+import com.anconet.JFindPwndHashes.workers.AdHashCollector;
+import com.anconet.JFindPwndHashes.workers.HashMatcher;
+import com.anconet.JFindPwndHashes.workers.IHashMatcher;
 
 public class App {
 
@@ -101,7 +104,7 @@ public class App {
 		if (outputFileParam != null && !outputFileParam.isEmpty() && !outputFileName.isBlank()) {
 			outputFileName = outputFileParam + outputFileName;
 		} else {
-			outputFileName = "jFindPwndHashes" + outputFileName;
+			outputFileName = "JFindPwndHashes" + outputFileName;
 		}
 
 		return outputFileName;
