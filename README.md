@@ -50,7 +50,7 @@ ForEach ($account in $accounts ) {
 $results | Out-File "hashes.ntds.users.enabled" -Encoding "UTF8"
 ```
 
-5. Execute application
+### Execute application
 ```
 java -jar JFindPwndHashes.jar -a hashes.ntds.users.enabled -p pwned-passwords-ntlm.txt
 ```
