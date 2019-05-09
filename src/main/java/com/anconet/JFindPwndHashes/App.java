@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import com.anconet.JFindPwndHashes.model.Match;
 import com.anconet.JFindPwndHashes.workers.AdHashCollector;
 import com.anconet.JFindPwndHashes.workers.HashMatcher;
+import com.anconet.JFindPwndHashes.workers.IAdHashCollector;
 import com.anconet.JFindPwndHashes.workers.IHashMatcher;
 
 public class App {
@@ -47,7 +48,7 @@ public class App {
 				String outputFileParam = commandLine.getOptionValue("o");
 
 				IHashMatcher hashMatcher = new HashMatcher();
-				AdHashCollector adHashCollector = new AdHashCollector();
+				IAdHashCollector adHashCollector = new AdHashCollector();
 				
 				final ConcurrentMap<String, List<String>> adHashes = adHashCollector.collectAdHashesAsMapByCustomCollector(adHashesParam);
 				
