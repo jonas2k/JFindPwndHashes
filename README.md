@@ -20,12 +20,7 @@ The list can be downloaded here: https://haveibeenpwned.com/Passwords
 1. Dump NTDS.dit on a DC:
 ```
 C:\>mkdir c:\windows\temp\dump\
-C:\>ntdsutil
-ntdsutil: activate instance ntds
-ntdsutil: ifm
-ifm: create full c:\windows\temp\dump\
-ifm: quit
-ntdsutil: quit
+C:\>ntdsutil "activate instance ntds" "ifm" "create full c:\windows\temp\dump\" "quit" "quit"
 ```
 2. Extract hashes using `impacket-secretsdump`:
 ```
@@ -35,17 +30,22 @@ sudo impacket-secretsdump -ntds Active\ Directory/ntds.dit -system registry/SYST
 ```
 grep -v "\\$" hashes.ntds > hashes.ntds.users
 ```
-4. Filter disabled user accounts (requires Active Directory Powershell cmdlets):
+4. Filter disabled and expired user accounts (requires Active Directory Powershell cmdlets):
 ```powershell
 $accounts = Get-Content -Path .\hashes.ntds.users -Encoding "UTF8"
 $results=@()
 $forest=[system.directoryservices.activedirectory.forest]::GetCurrentForest().Name+':3268'
 
 ForEach ($account in $accounts ) {
-	$current = $account| Select-String -Pattern "(?<=\\)(.*?)(?=\:)" -AllMatches | Select-Object -Expand matches | Select-Object -Expand Value
-	if($current -ne $null -and (Get-ADUser -filter {SamAccountName -eq $current } -Properties SamAccountName,Enabled -Server $forest).Enabled) {
-		$results += $account
-	} 
+    $current = $account| Select-String -Pattern "(?<=\\)(.*?)(?=\:)" -AllMatches | Select-Object -Expand matches | Select-Object -Expand Value
+    if($null -ne $current) {
+
+        $currentAdUser = Get-ADUser -filter {SamAccountName -eq $current } -Properties SamAccountName,Enabled,AccountExpirationDate -Server $forest
+
+        if($currentAdUser.Enabled -and ($null -eq $currentAdUser.AccountExpirationDate -or $currentAdUser.AccountExpirationDate -gt (Get-Date))) {
+            $results += $account
+        }
+    }
 }
 $results | Out-File "hashes.ntds.users.enabled" -Encoding "UTF8"
 ```
