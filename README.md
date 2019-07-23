@@ -20,7 +20,7 @@ The list can be downloaded here: https://haveibeenpwned.com/Passwords
 1. Dump NTDS.dit on a DC:
 ```
 C:\>mkdir c:\windows\temp\dump\
-C:\>ntdsutil "activate instance ntds" "ifm" "create full c:\windows\temp\dump\" "quit" "quit"
+C:\>ntdsutil "activate instance ntds" "ifm" "create full c:\windows\temp\dump" "quit" "quit"
 ```
 2. Extract hashes using `impacket-secretsdump`:
 ```
