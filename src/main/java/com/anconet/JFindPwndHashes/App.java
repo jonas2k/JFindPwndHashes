@@ -22,8 +22,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.model.Model;
 
 import com.anconet.JFindPwndHashes.model.Match;
+import com.anconet.JFindPwndHashes.utils.Helpers;
 import com.anconet.JFindPwndHashes.workers.AdHashCollector;
 import com.anconet.JFindPwndHashes.workers.HashMatcher;
 import com.anconet.JFindPwndHashes.workers.IAdHashCollector;
@@ -32,7 +34,7 @@ import com.anconet.JFindPwndHashes.workers.IHashMatcher;
 public class App {
 
 	public static void main(String[] args) {
-		
+
 		printBanner();
 
 		Options options = prepareOptions();
@@ -49,11 +51,15 @@ public class App {
 
 				IHashMatcher hashMatcher = new HashMatcher();
 				IAdHashCollector adHashCollector = new AdHashCollector();
-				
-				final ConcurrentMap<String, List<String>> adHashes = adHashCollector.collectAdHashesAsMapByCustomCollector(adHashesParam);
-				
-				printConfirmationRequest(adHashes.size());
-				
+
+				final ConcurrentMap<String, List<String>> adHashes = adHashCollector
+						.collectAdHashesAsMapByCustomCollector(adHashesParam);
+
+				final int adHashCount = adHashes.size();
+				final long adAccountsCount = Helpers.getLineCount(adHashesParam);
+
+				printConfirmationRequest(adHashCount);
+
 				Instant startTime = Instant.now();
 
 				List<Match> matches = hashMatcher.matchWithPwnCount(adHashes, pwndHashesParam);
@@ -63,8 +69,12 @@ public class App {
 
 				File outputFile = getOutputFile(outputFileParam);
 				String elapsedTimeString = getElapsedTimeString(elapsedTime);
+				String adAccountsCountString = getAdAccountsCountString(adAccountsCount);
+				String adHashesCountString = getAdHashesCountString(adHashCount);
+				String headerString = "Username;NTLM-Hash;Pwn-Count" + System.lineSeparator();
 
-				writeDataToFile(matches, elapsedTimeString, outputFile);
+				writeDataToFile(matches, outputFile, elapsedTimeString, adAccountsCountString, adHashesCountString,
+						headerString);
 
 				System.out.println(elapsedTimeString);
 				System.out.printf("Wrote output file to \"%s\".%s", outputFile, System.lineSeparator());
@@ -78,18 +88,24 @@ public class App {
 		}
 	}
 
-	private static void writeDataToFile(List<Match> matches, String elapsedTimeString, File outputFile)
-			throws IOException {
-		FileUtils.write(outputFile, elapsedTimeString, StandardCharsets.UTF_8, true);
-		String headerLine = "Username;NTLM-Hash;Pwn-Count" + System.lineSeparator();
-		FileUtils.write(outputFile, headerLine, StandardCharsets.UTF_8, true);
+	private static void writeDataToFile(List<Match> matches, File outputFile, String... strings) throws IOException {
+
+		Arrays.stream(strings).forEach(s -> writeLineToFile(s, outputFile));
 
 		for (Match match : matches) {
 
 			for (String user : match.getUserNames()) {
 				String line = user + ";" + match.getNtlmHash() + ";" + match.getPwnCount() + System.lineSeparator();
-				FileUtils.write(outputFile, line, StandardCharsets.UTF_8, true);
+				writeLineToFile(line, outputFile);
 			}
+		}
+	}
+
+	private static void writeLineToFile(String line, File outputFile) {
+		try {
+			FileUtils.write(outputFile, line, StandardCharsets.UTF_8, true);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -110,12 +126,20 @@ public class App {
 
 		return outputFileName;
 	}
-	
+
 	private static String getElapsedTimeString(Duration elapsedTime) {
 		String elapsedTimeString = String.format("Elapsed time: %s days, %s hours, %s minutes and %s seconds.%s",
 				elapsedTime.toDays(), elapsedTime.toHoursPart(), elapsedTime.toMinutesPart(),
 				elapsedTime.toSecondsPart(), System.lineSeparator());
 		return elapsedTimeString;
+	}
+
+	private static String getAdAccountsCountString(final long adAccountsCount) {
+		return String.format("Checked AD accounts: %s.%s", adAccountsCount, System.lineSeparator());
+	}
+
+	private static String getAdHashesCountString(final int adHashCount) {
+		return String.format("Checked AD hashes: %s.%s", adHashCount, System.lineSeparator());
 	}
 
 	private static boolean inputIsValid(CommandLine commandLine) {
@@ -131,18 +155,15 @@ public class App {
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp("JFindPwndHashes", options);
 	}
-	
+
 	private static void printConfirmationRequest(int adHashesSize) {
-		System.out.printf("I'll process %s hashes. This may take some time, go grab a cup of coffee.%s", adHashesSize, System.lineSeparator());
-		System.out.print("    (((("+System.lineSeparator() + 
-				"   (((("+System.lineSeparator() + 
-				"    ))))"+System.lineSeparator() + 
-				" _ .---."+System.lineSeparator() + 
-				"( |`---'|"+System.lineSeparator() + 
-				" \\|     |"+System.lineSeparator() + 
-				" : .___, :"+System.lineSeparator() + 
-				"  `-----'"+System.lineSeparator());
-		try(Scanner scanner = new Scanner(System.in)) {
+		System.out.printf("I'll process %s hashes. This may take some time, go grab a cup of coffee.%s", adHashesSize,
+				System.lineSeparator());
+		System.out.print("    ((((" + System.lineSeparator() + "   ((((" + System.lineSeparator() + "    ))))"
+				+ System.lineSeparator() + " _ .---." + System.lineSeparator() + "( |`---'|" + System.lineSeparator()
+				+ " \\|     |" + System.lineSeparator() + " : .___, :" + System.lineSeparator() + "  `-----'"
+				+ System.lineSeparator());
+		try (Scanner scanner = new Scanner(System.in)) {
 			System.out.println("Press Enter to continue.");
 			scanner.nextLine();
 		}
@@ -172,10 +193,13 @@ public class App {
 	}
 
 	private static void printBanner() {
-		System.out.println("****************************");
-		System.out.println(" JFindPwndHashes by jonas2k ");
-		System.out.println("****************************");
+		Model model = Helpers.getMavenModel();
+		String projectName = model != null ? model.getName() : "";
+		String projectVersion = model != null ? model.getVersion() : "";
+
+		System.out.println("*********************************");
+		System.out.format(" %s %s by jonas2k %s", projectName, projectVersion, System.lineSeparator());
+		System.out.println("*********************************");
 		System.out.println();
-		
 	}
 }

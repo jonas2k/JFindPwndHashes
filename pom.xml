@@ -5,7 +5,7 @@
 
 	<groupId>com.anconet</groupId>
 	<artifactId>JFindPwndHashes</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 
 	<name>JFindPwndHashes</name>
@@ -13,8 +13,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>12</maven.compiler.source>
-		<maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+		<maven.compiler.release>12</maven.compiler.release>
 		<junit.jupiter.version>5.4.2</junit.jupiter.version>
 	</properties>
 
@@ -66,6 +65,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-model</artifactId>
+			<version>3.6.1</version>
 		</dependency>
 	</dependencies>
 </project>
