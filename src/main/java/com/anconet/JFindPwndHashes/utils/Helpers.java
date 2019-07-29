@@ -71,7 +71,7 @@ public class Helpers {
 				return mavenXpp3Reader.read(new FileReader("pom.xml"));
 			} else {
 				return mavenXpp3Reader.read(new InputStreamReader(
-						Helpers.class.getResourceAsStream(Constants.pomPackagePath)));
+						Helpers.class.getResourceAsStream(Constants.POM_PACKAGE_PATH)));
 			}
 
 		} catch (IOException | XmlPullParserException e) {
