@@ -22,9 +22,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.model.Model;
-
 import com.anconet.JFindPwndHashes.model.Match;
+import com.anconet.JFindPwndHashes.utils.Constants;
 import com.anconet.JFindPwndHashes.utils.Helpers;
 import com.anconet.JFindPwndHashes.workers.AdHashCollector;
 import com.anconet.JFindPwndHashes.workers.HashMatcher;
@@ -193,12 +192,9 @@ public class App {
 	}
 
 	private static void printBanner() {
-		Model model = Helpers.getMavenModel();
-		String projectName = model != null ? model.getName() : "";
-		String projectVersion = model != null ? model.getVersion() : "";
-
 		System.out.println("*********************************");
-		System.out.format(" %s %s by jonas2k %s", projectName, projectVersion, System.lineSeparator());
+		System.out.format(" %s %s by %s %s", Helpers.getProjectName(), Helpers.getProjectVersion(), Constants.AUTHOR,
+				System.lineSeparator());
 		System.out.println("*********************************");
 		System.out.println();
 	}

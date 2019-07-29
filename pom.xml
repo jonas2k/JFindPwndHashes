@@ -25,6 +25,7 @@
 					<archive>
 						<manifest>
 							<mainClass>com.anconet.JFindPwndHashes.App</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 					</archive>
 					<descriptorRefs>
