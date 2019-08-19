@@ -7,7 +7,7 @@ public class Match {
 	private String ntlmHash;
 	private int pwnCount;
 	private List<String> userNames;
-	
+
 	public Match(String ntlmHash, List<String> userNames) {
 		super();
 		this.ntlmHash = ntlmHash;

@@ -30,9 +30,13 @@ public class ConcurrentMapCollector
 			int firstSeparator = element.indexOf(':');
 			int lastSeparator = StringUtils.ordinalIndexOf(element, ":", 3);
 
-			String key = element.substring(lastSeparator).replaceAll(":", "").toUpperCase();
-			List<String> valueList = map.computeIfAbsent(key, v -> new ArrayList<String>());
-			valueList.add(element.substring(0, firstSeparator));
+			if (firstSeparator != -1 && lastSeparator != -1) {
+				String key = element.substring(lastSeparator).replaceAll(":", "").toUpperCase();
+				List<String> valueList = map.computeIfAbsent(key, v -> new ArrayList<String>());
+				valueList.add(element.substring(0, firstSeparator));
+			} else {
+				System.err.printf("Skipping malformed element %s.%n", element);
+			}
 		};
 	}
 
