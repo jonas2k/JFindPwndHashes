@@ -4,11 +4,12 @@ A tool that matches hashes extracted from NTDS.dit against Troy Hunts HIBP NTLM 
 ### Usage
 Parameters:
 ```
- -a,--adhashes <FILE>         path to ntds.dit hash file, required
- -h,--help                    print this message
- -o,--outputfilename <FILE>   name of the output file (will be written to
-                              user profile directory)
- -p,--pwndhashes <FILE>       path to hibp ntlm hash file, required
+  -p, --pwned-hashes=<pwndHashesFile>
+                  path to hibp ntlm hash file, required
+  -a, --ad-hashes=<adHashesFile>
+                  path to prepared ntlm hash file, required
+  -h, --help      Show this help message and exit.
+  -V, --version   Print version information and exit.
 ```
 
 ### Get the list with pwnd NTLM hashes 
