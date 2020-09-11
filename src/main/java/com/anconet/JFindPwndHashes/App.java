@@ -2,6 +2,7 @@ package com.anconet.JFindPwndHashes;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +39,7 @@ public class App implements Runnable {
 	@Option(names = { "-p", "--pwned-hashes" }, required = true, description = "path to hibp ntlm hash file, required.")
 	File pwndHashesFile;
 
-	@Option(names = { "-a", "--ad-hashes" }, required = true, description = "path to prepared ntlm hash file, required.")
+	@Option(names = { "-a",	"--ad-hashes" }, required = true, description = "path to prepared ntlm hash file, required.")
 	File adHashesFile;
 
 	@Spec
@@ -79,6 +80,8 @@ public class App implements Runnable {
 
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
+		} catch (UncheckedIOException e) {
+			System.err.println("Malformed input detected.");
 		}
 	}
 
