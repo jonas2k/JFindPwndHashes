@@ -1,9 +1,11 @@
 package com.anconet.JFindPwndHashes.helpers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -16,7 +18,11 @@ public class Utils {
 	}
 
 	public static Stream<String> readFileLineByLine(File file) throws IOException {
-		return Files.lines(file.toPath());
+		try {
+			return Files.lines(file.toPath());
+		} catch (NoSuchFileException e) {
+			throw new FileNotFoundException(String.format("File '%s' does not exist", e.getMessage()));
+		}
 	}
 
 	public static long getLineCount(File file) {
@@ -25,7 +31,7 @@ public class Utils {
 		try (Stream<String> stream = Files.lines(file.toPath())) {
 			lineCount = stream.count();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 		return lineCount;
 	}
